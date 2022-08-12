@@ -26,7 +26,6 @@ library(sf)
 library(osmdata)
 library(downloader)
 library(leaflet)
-library(shiny)
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
@@ -102,7 +101,4 @@ peaks.ends <- peaks.alps %>%
 
 
 
-# saveRDS(peaks.ends, "temp_peaks_ends")
-
-#loadRDS
-peaks <- readRDS("temp_peaks_ends")
+#saveRDS(peaks.ends, "shiny_peaks/temp_peaks_ends")
