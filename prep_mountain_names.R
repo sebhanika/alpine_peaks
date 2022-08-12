@@ -39,6 +39,11 @@ download(url = url_alps, dest="mountain_areas.zip", mode="wb") # downloads zip f
 unzip("mountain_areas.zip", exdir = "data/mountain_areas") # unzips file into current working directory
 
 
+alps.load <- read_sf(dsn = "C:/Users/hanik/Documents/Data_projects/Intern/misc/mountain_names/r_version/data/mountain_areas/m_massifs_v1.shp") %>% 
+  filter(mm_code == 1)
+
+
+
 alps.load <- read_sf(dsn ="data/mountain_areas/m_massifs_v1.shp") %>% 
   filter(mm_code == 1)  #filter only for alps
 
@@ -102,3 +107,7 @@ peaks.ends <- peaks.alps %>%
 
 
 #saveRDS(peaks.ends, "shiny_peaks/temp_peaks_ends")
+
+
+peaks <- readRDS("temp_peaks_ends")
+

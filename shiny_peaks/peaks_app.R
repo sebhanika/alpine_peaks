@@ -1,68 +1,67 @@
 
 
 library(shiny)
+library(leaflet)
 
 # 
 # 
 # #loadRDS
-# peaks <- readRDS("temp_peaks_ends")
-# 
+peaks <- readRDS("data/temp_peaks_ends")
 
-# Define UI for app that draws a histogram ----
+endings <- sort(unique(peaks$type_end_lab))
+
+pal <- colorFactor(c("red", "blue", "green", "yellow", "grey",
+                     "lightgreen", "black", "navy", "brown", "darkred"),
+                   domain = endings)
+
+labs <- as.list(peaks$name)
+
+
+
 ui <- fluidPage(
+  titlePanel("title panel"),
   
-  # App title ----
-  titlePanel("Hello Shiny!"),
   
-  # Sidebar layout with input and output definitions ----
   sidebarLayout(
-    
-    # Sidebar panel for inputs ----
     sidebarPanel(
+      helpText("Create demographic maps with 
+               information from the 2010 US Census."),
       
-      # Input: Slider for the number of bins ----
-      sliderInput(inputId = "bins",
-                  label = "Number of bins:",
-                  min = 1,
-                  max = 50,
-                  value = 30)
-      
-    ),
+      selectInput("end", 
+                  label = "Choose a variable to display",
+                  choices = as.list(endings),
+                  selected = "-berg", multiple = T)),
     
-    # Main panel for displaying outputs ----
-    mainPanel(
-      
-      # Output: Histogram ----
-      plotOutput(outputId = "distPlot")
-      
-    )
-  )
+    mainPanel("Main",
+              leafletOutput("map"),
+              p())
+  ),
+  
 )
 
-
-# Define server logic required to draw a histogram ----
-server <- function(input, output) {
+server <- function(input, output, session) {
   
-  # Histogram of the Old Faithful Geyser Data ----
-  # with requested number of bins
-  # This expression that generates a histogram is wrapped in a call
-  # to renderPlot to indicate that:
-  #
-  # 1. It is "reactive" and therefore should be automatically
-  #    re-executed when inputs (input$bins) change
-  # 2. Its output type is a plot
-  output$distPlot <- renderPlot({
-    
-    x    <- faithful$waiting
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    
-    hist(x, breaks = bins, col = "#75AADB", border = "white",
-         xlab = "Waiting time to next eruption (in mins)",
-         main = "Histogram of waiting times")
-    
+  
+  # Reactive expression for the data subsetted to what the user selected
+  filteredData <- reactive({
+    peaks[peaks$type_end_lab == input$end,]
+  })
+
+  output$map <- renderLeaflet({
+    leaflet() %>%
+        addProviderTiles(providers$CartoDB.Positron) %>% 
+      fitBounds(4.7, 45, 17.0, 48.4)
+    })
+
+  observe({
+    leafletProxy("map", data = filteredData()) %>%
+      clearShapes() %>%
+      addCircles(color = ~pal(type_end_lab),
+                 popup = ~name, 
+                 label = lapply(labs, HTML))
+      
   })
   
 }
 
-
-shinyApp(ui = ui, server = server)
+shinyApp(ui, server)
