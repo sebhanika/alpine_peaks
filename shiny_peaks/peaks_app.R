@@ -30,18 +30,18 @@ ui <-navbarPage("Alpine Peaks Endings",
                                 necessaryly follow national borders. However natrually most of the mountains with
                                 German names can be found in predominatly German speaking areas such as Austria,
                                 South-Tyrol, Germany and Switzerland. The analyis is based on Open Street Map 
-                                data and the R code to recrate the project can be found here")),
+                                data and the R code to recrate the project can be found here.")),
+                     
+                     wellPanel(
+                       h4("Map Explanations"),
+                       p("Below we can see the map in which we can dynamicaaly select the endings of mountain
+                         names we want to visualize.")),
                      
                      
                       # sidebar with user input definitions
                       sidebarLayout(
                         # side bar panel with text selction
                         sidebarPanel(
-                          
-                          
-                          p("does this work?"),
-                          br(),
-                          
                           
                           # Explanation text
                           
@@ -53,10 +53,14 @@ ui <-navbarPage("Alpine Peaks Endings",
                                       label = "Mountain name Ending",
                                       choices = as.list(endings), 
                                       selected = "-berg",
-                                      multiple = T)
+                                      multiple = T),
+                          
+                          # Legend Input
+                          checkboxInput("legend", "Show legend", TRUE)
                           
                           
                           ), 
+                        
                         
                         
                         # Main panel for displaying outputs
@@ -69,6 +73,14 @@ ui <-navbarPage("Alpine Peaks Endings",
             
             # Tab with additonal plots
             tabPanel("Plot", fluidPage(theme = shinytheme("flatly")),
+                     
+                     # Plot explanations
+                     wellPanel(
+                       h4("Plot Explanations"),
+                       p("Below we can see two plots regarding to see the data in a raw form. FIrst the total
+                          counts by endings. We can adjust the elevation of the mountains by the slider panel. 
+                          The second plot shows the histogram by ending and elevevaiton. It also reacts to the
+                          slider panel.")),
                      
                      # sidebar with user input definitions
                      sidebarLayout(
@@ -109,7 +121,10 @@ ui <-navbarPage("Alpine Peaks Endings",
 
 server <- function(input, output, session) {
   
-  # Reactive expression for the data subsetted to what the user selected
+  #### Create Map 
+  
+  
+  # Reactive expression for the data subsetted by selectedInput
   filteredData <- reactive({
     
     # if nothing is selected because user deleted everything we display all points
@@ -127,7 +142,7 @@ server <- function(input, output, session) {
   output$map <- renderLeaflet({
     leaflet() %>%
         addProviderTiles(providers$CartoDB.Positron) %>% 
-      fitBounds(4.7, 45, 17.0, 48.4) # preselects alpine areas
+      fitBounds(6, 46.5, 17.5, 47.5) # zooms into alpine areas
     })
 
   # add points based on filtered data by user
@@ -139,21 +154,43 @@ server <- function(input, output, session) {
                                 "Elevation in m:", 
                                 prettyNum(ele, big.mark = ",")), 
                  label = ~sapply(name, HTML))
+    
+    
+    
+    
+    # create legend
+    
+    # Use a separate observer to recreate the legend as needed.
+    observe({
+      proxy <- leafletProxy("map", data = filteredData())
+      
+      # Remove any existing legend, and only if the legend is
+      # enabled, create a new one.
+      proxy %>% clearControls()
+      if (input$legend) {
+        proxy %>% addLegend(position = "bottomright",
+                            title = "Ending",
+                            pal = pal, values = ~type_end_lab
+        )
+      }
+    })
+    
+    
       
   })
   
   
   
   
-  ### - data for plot
+  ##### - data for plot
   
-  # Reactive expression for the data subsetted to what the user selected
+  # Reactive expression for the data subsetted by slider panels
   plotdata <- reactive({
     subset(peaks, peaks$ele %in% c(input$elev[1]:input$elev[2]))
     
   })
   
-  
+  ### Plot1 with Total counts by endings(sorted)
   output$plot1 <- renderPlot({
     
     plotdata() %>% 
@@ -178,6 +215,8 @@ server <- function(input, output, session) {
     })
   
   
+  
+  ### Plot two with facets of counts by endigs
   output$plot2 <- renderPlot({
     
     plotdata() %>% 
