@@ -5,7 +5,6 @@ function(input, output, session) {
   
   #### Create Map 
   
-  
   # Reactive expression for the data subsetted by selectedInput
   filteredData <- reactive({
     
@@ -38,8 +37,6 @@ function(input, output, session) {
                  label = ~sapply(name, HTML))
     
     
-    
-    
     # create legend
     
     # Use a separate observer to recreate the legend as needed.
@@ -67,8 +64,23 @@ function(input, output, session) {
   ##### - data for plot
   
   # Reactive expression for the data subsetted by slider panels
+  
   plotdata <- reactive({
-    subset(peaks, peaks$ele %in% c(input$elev[1]:input$elev[2]))
+  # if nothing is selected because user deleted everything we display all points
+  # not the initial setting however as it is cluttered
+  if(is.null(input$country)){
+    return(peaks)}
+  
+  # return selected input
+  else 
+  {return(subset(peaks,
+                 peaks$ele %in% c(input$elev[1]:input$elev[2]) & peaks$NAME_ENGL == input$country)
+  )
+  }
+  
+  
+  
+    
     
   })
   
@@ -78,7 +90,7 @@ function(input, output, session) {
     plotdata() %>% 
       ggplot(aes(x = forcats::fct_infreq(type_end_lab))) +
       
-      geom_bar(stat = "count", fill = "#2c3e50")+
+      geom_bar(stat = "count", fill = "#2c3e50", na.rm = TRUE)+
       
       coord_flip()+
       
@@ -98,15 +110,19 @@ function(input, output, session) {
   
   
   
-  ### Plot two with facets of counts by endigs
+  ### Plot two with facets of counts by endings
+  
+ 
   output$plot2 <- renderPlot({
     
     plotdata() %>% 
       ggplot(aes(x = ele, fill = type_end)) +
       
-      geom_histogram()+
+      geom_histogram(bins = 40, na.rm = T)+
       
       facet_wrap(~type_end_lab, nrow = 2) +
+      
+      scale_fill_manual(values = palgg) +
       
       scale_x_continuous(breaks = seq(0, 4000, by = 1000),
                          labels = seq(0,4, by = 1)) +

@@ -167,4 +167,42 @@ peaks.alps <- st_join(
 )
 
 
-saveRDS(peaks.alps, "peaks_ends")
+#saveRDS(peaks.alps, "peaks_ends")
+
+
+try1 <- park_palette("GeneralGrant")
+
+palgg <- c(park_palette("GeneralGrant"), "#8C9D57", "#E79498")
+
+peaks %>% 
+  ggplot(aes(x = ele, fill = type_end)) +
+  
+  geom_histogram(na.rm = T, bins = 40)+
+  
+  facet_wrap(~type_end_lab, nrow = 2) +
+  
+  scale_fill_manual(values = try1) +
+  
+  scale_x_continuous(breaks = seq(0, 4000, by = 1000),
+                     labels = seq(0,4, by = 1)) +
+  
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        panel.border = element_rect(colour = "grey30", fill=NA, size=0.5),
+        axis.title = element_text(color = "grey30", size = 12),
+        legend.position = "none",
+        strip.background =element_rect(fill="white"),
+        strip.text = element_text(color = "grey30", size = 14),
+        title = element_text(color = "grey30", size = 20)) +
+  labs(title = "Distribution of Alpine Peaks Elevation",
+       x = "Elevation in 1000m",
+       y = "Count")
+
+
+
+
+
+
+

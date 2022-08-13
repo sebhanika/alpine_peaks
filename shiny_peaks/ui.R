@@ -31,7 +31,7 @@ navbarPage("Alpine Peaks Endings",
                           helpText("Here you can select multiple types of endings for mountain names.
                Hover across points andclick on points to get more information about the mountain"),
                           
-                          # input
+                          # input/select mountain ending
                           selectInput("end", 
                                       label = "Mountain name Ending",
                                       choices = as.list(endings), 
@@ -54,6 +54,7 @@ navbarPage("Alpine Peaks Endings",
                         )
                       ),
             
+           
             # Tab with additonal plots
             tabPanel("Plot", fluidPage(theme = shinytheme("flatly")),
                      
@@ -78,7 +79,18 @@ navbarPage("Alpine Peaks Endings",
                              "Elevation:", 
                              min = 0,
                              max = max(peaks$ele, na.rm = TRUE),
-                             value = c(0, max(peaks$ele, na.rm = TRUE)), sep='')),
+                             value = c(0, max(peaks$ele, na.rm = TRUE)), sep=''),
+                         
+                         
+                         selectInput("country", 
+                                     label = "Country",
+                                     choices = as.list(cntrs), 
+                                     selected = NULL,
+                                     multiple = T)
+                         
+                         
+                         
+                         ),
                        
                        # Main panel with plots
                        mainPanel(
