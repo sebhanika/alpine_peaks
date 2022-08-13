@@ -69,16 +69,33 @@ osm.query <- opq(bbox = alp.ext,
 peaks.query <- osmdata_sf(osm.query)
 
 
-peaks.raw <- peaks.query$osm_points %>% 
+
+# issue with OSM Encoding
+encode_osm <- function(list){
+  # For all data frames in query result
+  for (df in (names(list)[map_lgl(list, is.data.frame)])) {
+    last <- length(list[[df]])
+    # For all columns except the last column ("geometry")
+    for (col in names(list[[df]])[-last]){
+      # Change the encoding to UTF8
+      Encoding(list[[df]][[col]]) <- "UTF-8"
+    }
+  }
+  return(list)
+}
+
+results_encoded <- encode_osm(peaks.query)
+
+peaks.raw <- results_encoded$osm_points %>% 
   select(c(osm_id, name, geometry))
 
-saveRDS(peaks.raw, file = "temp.peaks")
 
 # filter only points in alps 
 peaks.alps <- st_intersection(peaks.raw, alps)
 
 rm(peaks.query)
 gc()
+
 
 # Clean name data ---------------------------------------------------------
 
@@ -106,8 +123,74 @@ peaks.ends <- peaks.alps %>%
 
 
 
-#saveRDS(peaks.ends, "shiny_peaks/temp_peaks_ends")
+
+# testing stuff while building app, delete later --------------------------
 
 
-peaks <- readRDS("temp_peaks_ends")
+peaks <- readRDS("peaks_ends")
+
+peaks$ele <- as.numeric(peaks$ele)
+
+
+
+# plotting map
+peaks %>% 
+  filter(ele > y) %>% 
+  ggplot(aes(x = forcats::fct_infreq(type_end_lab))) +
+  
+  geom_bar(stat = "count", fill = "darkblue")+
+ 
+  coord_flip()+
+  
+  theme_bw() +
+  
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        panel.border = element_rect(colour = "grey30", fill=NA, size=0.5),
+        strip.background =element_rect(fill="white"),
+        strip.text = element_text(color = "grey30", size = 16),
+        title = element_text(color = "grey30", size = 20)) +
+  labs(title = "Most commom endings of Alpine Peaks in German",
+       x = "Endings",
+       y = "Count")
+
+
+
+
+
+try1 <- lm(ele ~ type_end, data = peaks)
+summary(try1)
+
+
+peaks %>% 
+  ggplot(aes(x = ele, fill = type_end)) +
+  
+  geom_histogram()+
+  
+  facet_wrap(~type_end_lab, nrow = 2) +
+  
+  scale_x_continuous(breaks = seq(0, 4000, by = 1000),
+                     labels = seq(0,4, by = 1)) +
+  
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+                      panel.grid.minor = element_blank(),
+                      panel.background = element_blank(), 
+                      panel.border = element_rect(colour = "grey30", fill=NA, size=0.5),
+                      axis.title = element_text(color = "grey30", size = 12),
+                      legend.position = "none",
+                      strip.background =element_rect(fill="white"),
+                      strip.text = element_text(color = "grey30", size = 14),
+                      title = element_text(color = "grey30", size = 20)) +
+  labs(title = "Distribution of Alpine Peaks Elevation",
+       x = "Elevation in 1000m",
+       y = "Count")
+
+
+
+
+
+
+
 
