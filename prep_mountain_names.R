@@ -18,17 +18,24 @@
 
 # Libraries and setup -----------------------------------------------------
 
-
-#install.packages("osmdata")
-
 library(tidyverse)
 library(sf)
+library(geojsonsf)
 library(osmdata)
 library(downloader)
 library(leaflet)
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
+# load country data -------------------------------------------------------
+
+url_countries <- "https://gisco-services.ec.europa.eu/distribution/v2/countries/download/ref-countries-2020-10m.geojson.zip"
+download(url = url_countries, dest="countries.zip", mode="wb") # downloads zip folder into current directory
+unzip("countries.zip", exdir = "data/europe_countries", files = "CNTR_RG_10M_2020_4326.geojson") # unzips file into current working directory
+
+# loads geojson into R
+countries_europe <- geojson_sf("data/europe_countries/CNTR_RG_10M_2020_4326.geojson") %>% 
+  filter(ISO3_CODE %in% c("AUT", "FRA", "ITA", "DEU", "SVN", "CHE", "LIE"))
 
 
 # Load mountain areas -----------------------------------------------------
@@ -91,10 +98,21 @@ peaks.raw <- results_encoded$osm_points %>%
 
 
 # filter only points in alps 
-peaks.alps <- st_intersection(peaks.raw, alps)
+peaks.alps.filt <- st_intersection(peaks.raw, alps)
 
 rm(peaks.query)
 gc()
+
+
+# Spatial join of country attribute to each point
+peaks.alps <- st_join(
+  peaks.alps.filt,
+  select(countries_europe, c(NAME_ENGL, ISO3_CODE)),
+  join = st_intersects,
+  left = TRUE,
+  largest = FALSE
+)
+
 
 
 # Clean name data ---------------------------------------------------------
@@ -109,6 +127,8 @@ endings_filt <- paste(endings, collapse = "|")
 
 
 peaks.ends <- peaks.alps %>% 
+  select(-c(m_massive, name_mm, mm_code, area_km2)) %>% #drop unnecessary columns
+  mutate(ele = as.numeric(ele)) %>% 
   mutate(name = str_replace_all(name, "\\-", " - "),
          name = str_replace_all(name, "\\/", " / "),
          name = str_replace_all(name, "  "," "),
@@ -123,7 +143,9 @@ peaks.ends <- peaks.alps %>%
 
 
 
-saveRDS(peaks.ends, "peaks_ends")
+#saveRDS(peaks.ends, "peaks_ends")
+
+
 
 # testing stuff while building app, delete later --------------------------
 
@@ -132,11 +154,17 @@ peaks <- readRDS("peaks_ends")
 
 peaks$ele <- as.numeric(peaks$ele)
 
+peaks <- peaks %>% 
+  select(-c(m_massive, name_mm, mm_code, area_km2))
 
 
+peaks.alps <- st_join(
+  peaks,
+  select(countries_europe, c(NAME_ENGL, ISO3_CODE)),
+  join = st_intersects,
+  left = TRUE,
+  largest = FALSE
+)
 
 
-
-
-
-
+saveRDS(peaks.alps, "peaks_ends")
