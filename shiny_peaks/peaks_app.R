@@ -1,12 +1,10 @@
 
 
 library(shiny)
+library(shinythemes)
 library(leaflet)
 library(tidyverse)
 
-# 
-# 
-# #loadRDS
 
 peaks <- readRDS("data/peaks_ends")
 peaks$ele <- as.numeric(peaks$ele)
@@ -19,70 +17,88 @@ pal <- colorFactor(c("red", "blue", "green", "yellow", "grey",
 
 
 
-
-
-
-ui <- fluidPage(
-  
-  tabsetPanel(
-    tabPanel("Map", fluid = TRUE,
-             
-             # sidebar with user input definitions
-             sidebarLayout(
-               
-               # side bar panel with text selction
-               sidebarPanel(
-                 
-                 # Explaination text
-                 helpText("Here you can select multiple types of endings for mountain names.
+ui <-navbarPage("Alpine Peaks Endings",
+                
+             # Tab with Map and explanations   
+            tabPanel("Map", fluidPage(theme = shinytheme("flatly")),
+                     
+                     # Explanation about project
+                     wellPanel(
+                              h3("Project Explanations"),
+                              p("This project visualizies the most common German endings of mountains
+                                in the Alps. Since many regions of the alps are multilingual this does not
+                                necessaryly follow national borders. However natrually most of the mountains with
+                                German names can be found in predominatly German speaking areas such as Austria,
+                                South-Tyrol, Germany and Switzerland. The analyis is based on Open Street Map 
+                                data and the R code to recrate the project can be found here")),
+                     
+                     
+                      # sidebar with user input definitions
+                      sidebarLayout(
+                        # side bar panel with text selction
+                        sidebarPanel(
+                          
+                          
+                          p("does this work?"),
+                          br(),
+                          
+                          
+                          # Explanation text
+                          
+                          helpText("Here you can select multiple types of endings for mountain names.
                Hover across points andclick on points to get more information about the mountain"),
-                 
-                 # input
-                 selectInput("end", 
-                             label = "Mountain name Ending",
-                             choices = as.list(endings), 
-                             selected = "-berg",
-                             multiple = T)
-                 
-                          ), # close sidebarPanel
-               
-               
-               # Main panel for displaying outputs
-               mainPanel(
-                 leafletOutput("map"),
-                         p()
-                         )
-               )
-             ),
-  
-    tabPanel("plot", fluid = TRUE,
-             sidebarLayout(
-               
-               sidebarPanel(
-                 
-                 # Explaination text
-                 helpText("Here you can select the Minimum elevation in meters."),
-                 
-                 
-                 sliderInput("elev",
+                          
+                          # input
+                          selectInput("end", 
+                                      label = "Mountain name Ending",
+                                      choices = as.list(endings), 
+                                      selected = "-berg",
+                                      multiple = T)
+                          
+                          
+                          ), 
+                        
+                        
+                        # Main panel for displaying outputs
+                        mainPanel(
+                          leafletOutput("map"),
+                          p()
+                          )
+                        )
+                      ),
+            
+            # Tab with additonal plots
+            tabPanel("Plot", fluidPage(theme = shinytheme("flatly")),
+                     
+                     # sidebar with user input definitions
+                     sidebarLayout(
+                       
+                       # side bar panel with text selction
+                       sidebarPanel(
+                         # Explaination text
+                         helpText("Here you can select the range of elevation in meters."),
+                         
+                         # define slider
+                         sliderInput("elev",
                              "Elevation:", 
                              min = 0,
                              max = max(peaks$ele, na.rm = TRUE),
-                             value = c(0, 1000), sep='')),
-
-               mainPanel(
+                             value = c(0, max(peaks$ele, na.rm = TRUE)), sep='')),
+                       
+                       # Main panel with plots
+                       mainPanel(
                  
-                 
+                 # plot 1 iwth total counts
                  fluidRow(plotOutput("plot1")),
+                 # plot 2 with counts by ending
                  fluidRow(plotOutput("plot2"))
                  
-                 
-               )
-             )
-    )
-  )
+                                )
+                              )
+                  )
   
 
+# close navbarPage and UI
 )
 
 
@@ -143,7 +159,7 @@ server <- function(input, output, session) {
     plotdata() %>% 
       ggplot(aes(x = forcats::fct_infreq(type_end_lab))) +
       
-      geom_bar(stat = "count", fill = "darkblue")+
+      geom_bar(stat = "count", fill = "#2c3e50")+
       
       coord_flip()+
       
@@ -164,7 +180,7 @@ server <- function(input, output, session) {
   
   output$plot2 <- renderPlot({
     
-    peaks %>% 
+    plotdata() %>% 
       ggplot(aes(x = ele, fill = type_end)) +
       
       geom_histogram()+
