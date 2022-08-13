@@ -123,6 +123,7 @@ peaks.ends <- peaks.alps %>%
 
 
 
+saveRDS(peaks.ends, "peaks_ends")
 
 # testing stuff while building app, delete later --------------------------
 
