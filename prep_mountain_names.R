@@ -133,61 +133,6 @@ peaks$ele <- as.numeric(peaks$ele)
 
 
 
-# plotting map
-peaks %>% 
-  filter(ele > y) %>% 
-  ggplot(aes(x = forcats::fct_infreq(type_end_lab))) +
-  
-  geom_bar(stat = "count", fill = "darkblue")+
- 
-  coord_flip()+
-  
-  theme_bw() +
-  
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(), 
-        panel.border = element_rect(colour = "grey30", fill=NA, size=0.5),
-        strip.background =element_rect(fill="white"),
-        strip.text = element_text(color = "grey30", size = 16),
-        title = element_text(color = "grey30", size = 20)) +
-  labs(title = "Most commom endings of Alpine Peaks in German",
-       x = "Endings",
-       y = "Count")
-
-
-
-
-
-try1 <- lm(ele ~ type_end, data = peaks)
-summary(try1)
-
-
-peaks %>% 
-  ggplot(aes(x = ele, fill = type_end)) +
-  
-  geom_histogram()+
-  
-  facet_wrap(~type_end_lab, nrow = 2) +
-  
-  scale_x_continuous(breaks = seq(0, 4000, by = 1000),
-                     labels = seq(0,4, by = 1)) +
-  
-  theme_bw() +
-  theme(panel.grid.major = element_blank(),
-                      panel.grid.minor = element_blank(),
-                      panel.background = element_blank(), 
-                      panel.border = element_rect(colour = "grey30", fill=NA, size=0.5),
-                      axis.title = element_text(color = "grey30", size = 12),
-                      legend.position = "none",
-                      strip.background =element_rect(fill="white"),
-                      strip.text = element_text(color = "grey30", size = 14),
-                      title = element_text(color = "grey30", size = 20)) +
-  labs(title = "Distribution of Alpine Peaks Elevation",
-       x = "Elevation in 1000m",
-       y = "Count")
-
-
 
 
 
