@@ -110,9 +110,7 @@ peaks.alps <- st_join(
   select(countries_europe, c(NAME_ENGL, ISO3_CODE)),
   join = st_intersects,
   left = TRUE,
-  largest = FALSE
-)
-
+  largest = FALSE)
 
 
 # Clean name data ---------------------------------------------------------
