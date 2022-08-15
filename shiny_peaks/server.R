@@ -8,8 +8,7 @@ function(input, output, session) {
   # Reactive expression for the data subsetted by selectedInput
   filteredData <- reactive({
     
-    # if nothing is selected because user deleted everything we display all points
-    # not the initial setting however as it is cluttered
+    # if nothing is selected because user deleted everything, all points are displayed
     if(is.null(input$end)){
       return(peaks)}
       
@@ -23,7 +22,14 @@ function(input, output, session) {
   output$map <- renderLeaflet({
     leaflet() %>%
         addProviderTiles(providers$CartoDB.Positron) %>% 
-      fitBounds(6, 46.5, 17.5, 47.5) # zooms into alpine areas
+      fitBounds(6, 46.5, 17.5, 47.5) %>%  # zooms into alpine areas
+      addProviderTiles(providers$CartoDB.Positron, 
+                       group = "Basemap - greyscale") %>% #adding basemaps
+      addProviderTiles(providers$CartoDB.DarkMatter, 
+                       group = "Basemap - dark") %>%
+      addLayersControl(
+        baseGroups = c("Basemap - greyscale", "Basemap - dark"), # adding control for base maps
+        options = layersControlOptions(collapsed = TRUE))
     })
 
   # add points based on filtered data by user
@@ -64,26 +70,24 @@ function(input, output, session) {
   ##### - data for plot
   
   # Reactive expression for the data subsetted by slider panels
-  
+
   plotdata <- reactive({
-  # if nothing is selected because user deleted everything we display all points
-  # not the initial setting however as it is cluttered
-  if(is.null(input$country)){
-    return(peaks)}
-  
-  # return selected input
-  else 
-  {return(subset(peaks,
-                 peaks$ele %in% c(input$elev[1]:input$elev[2]) & peaks$NAME_ENGL == input$country)
-  )
-  }
-  
-  
-  
-    
-    
+    # if nothing is selected because user deleted everything we display all points
+    # not the initial setting however as it is cluttered
+    if(input$country == "ALL" || is.null(input$country)){
+      return(subset(peaks, peaks$ele %in% c(input$elev[1]:input$elev[2])))
+    }
+
+    # return selected input
+    else
+    {return(subset(peaks,
+                   peaks$ele %in% c(input$elev[1]:input$elev[2]) & peaks$NAME_ENGL == input$country)
+    )
+    }
+
   })
-  
+
+
   ### Plot1 with Total counts by endings(sorted)
   output$plot1 <- renderPlot({
     
@@ -99,20 +103,18 @@ function(input, output, session) {
       theme(panel.grid.major = element_blank(),
             panel.grid.minor = element_blank(),
             panel.background = element_blank(), 
-            panel.border = element_rect(colour = "grey30", fill=NA, size=0.5),
-            strip.background =element_rect(fill="white"),
-            strip.text = element_text(color = "grey30", size = 16),
-            title = element_text(color = "grey30", size = 20)) +
+            axis.title = element_text(color = "grey30", size = 12),
+            legend.position = "none",
+            title = element_text(color = "grey30", size = 16)) +
       labs(title = "Most commom endings of Alpine Peaks in German",
            x = "Endings",
            y = "Count")
     })
   
   
-  
   ### Plot two with facets of counts by endings
   
- 
+
   output$plot2 <- renderPlot({
     
     plotdata() %>% 
@@ -128,6 +130,7 @@ function(input, output, session) {
                          labels = seq(0,4, by = 1)) +
       
       theme_bw() +
+      
       theme(panel.grid.major = element_blank(),
             panel.grid.minor = element_blank(),
             panel.background = element_blank(), 
@@ -136,7 +139,8 @@ function(input, output, session) {
             legend.position = "none",
             strip.background =element_rect(fill="white"),
             strip.text = element_text(color = "grey30", size = 14),
-            title = element_text(color = "grey30", size = 20)) +
+            title = element_text(color = "grey30", size = 16)) +
+      
       labs(title = "Distribution of Alpine Peaks Elevation",
            x = "Elevation in 1000m",
            y = "Count")

@@ -24,6 +24,7 @@ library(geojsonsf)
 library(osmdata)
 library(downloader)
 library(leaflet)
+library(nationalparkcolors)
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
@@ -45,20 +46,19 @@ url_alps <- "https://www.eea.europa.eu/data-and-maps/data/european-mountain-area
 download(url = url_alps, dest="mountain_areas.zip", mode="wb") # downloads zip folder into current directory
 unzip("mountain_areas.zip", exdir = "data/mountain_areas") # unzips file into current working directory
 
-
-alps.load <- read_sf(dsn = "C:/Users/hanik/Documents/Data_projects/Intern/misc/mountain_names/r_version/data/mountain_areas/m_massifs_v1.shp") %>% 
-  filter(mm_code == 1)
-
-
-
+# load area of alps
 alps.load <- read_sf(dsn ="data/mountain_areas/m_massifs_v1.shp") %>% 
   filter(mm_code == 1)  #filter only for alps
 
-alps.reproj <- st_transform(alps.load, 4326)
-alps <- st_make_valid(alps.reproj)
+# reproject data
+alps.reproj <- st_transform(alps.load, 4326) 
 
+# fix geometries
+alps <- st_make_valid(alps.reproj) # f
+
+#remove unnecessary objects
 rm(alps.load, alps.reproj)
-gc()
+
 
 # Load OSM data -----------------------------------------------------------
 
@@ -72,12 +72,10 @@ osm.query <- opq(bbox = alp.ext,
   add_osm_feature(key = 'natural', value = 'peak') 
 
 
-# call query, takes a long time
+# call query. This can take a long time
 peaks.query <- osmdata_sf(osm.query)
 
-
-
-# issue with OSM Encoding
+# fix issue with OSM Encoding, regarding Umlaute Ä. Ö. Ü
 encode_osm <- function(list){
   # For all data frames in query result
   for (df in (names(list)[map_lgl(list, is.data.frame)])) {
@@ -91,15 +89,17 @@ encode_osm <- function(list){
   return(list)
 }
 
+# apply encoding
 results_encoded <- encode_osm(peaks.query)
 
+# select only relevant data
 peaks.raw <- results_encoded$osm_points %>% 
-  select(c(osm_id, name, geometry))
+  select(c("osm_id", "name", "geometry", "ele"))
 
-
-# filter only points in alps 
+# filter only points in polygon of 'Alps'
 peaks.alps.filt <- st_intersection(peaks.raw, alps)
 
+# remove unneccesary object
 rm(peaks.query)
 gc()
 
@@ -117,15 +117,13 @@ peaks.alps <- st_join(
 
 # Clean name data ---------------------------------------------------------
 
-
 # most typical endings
 endings <- paste0(c("berg", "spitze", "spitz", "kogel", "horn", "joch", 
                     "stein", "eck", "ling", "stock", "kopf"), " ")
 
 endings_filt <- paste(endings, collapse = "|")
 
-
-
+# clean data, name variable
 peaks.ends <- peaks.alps %>% 
   select(-c(m_massive, name_mm, mm_code, area_km2)) %>% #drop unnecessary columns
   mutate(ele = as.numeric(ele)) %>% 
@@ -153,56 +151,6 @@ peaks.ends <- peaks.alps %>%
 peaks <- readRDS("peaks_ends")
 
 peaks$ele <- as.numeric(peaks$ele)
-
-peaks <- peaks %>% 
-  select(-c(m_massive, name_mm, mm_code, area_km2))
-
-
-peaks.alps <- st_join(
-  peaks,
-  select(countries_europe, c(NAME_ENGL, ISO3_CODE)),
-  join = st_intersects,
-  left = TRUE,
-  largest = FALSE
-)
-
-
-#saveRDS(peaks.alps, "peaks_ends")
-
-
-try1 <- park_palette("GeneralGrant")
-
-palgg <- c(park_palette("GeneralGrant"), "#8C9D57", "#E79498")
-
-peaks %>% 
-  ggplot(aes(x = ele, fill = type_end)) +
-  
-  geom_histogram(na.rm = T, bins = 40)+
-  
-  facet_wrap(~type_end_lab, nrow = 2) +
-  
-  scale_fill_manual(values = try1) +
-  
-  scale_x_continuous(breaks = seq(0, 4000, by = 1000),
-                     labels = seq(0,4, by = 1)) +
-  
-  theme_bw() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(), 
-        panel.border = element_rect(colour = "grey30", fill=NA, size=0.5),
-        axis.title = element_text(color = "grey30", size = 12),
-        legend.position = "none",
-        strip.background =element_rect(fill="white"),
-        strip.text = element_text(color = "grey30", size = 14),
-        title = element_text(color = "grey30", size = 20)) +
-  labs(title = "Distribution of Alpine Peaks Elevation",
-       x = "Elevation in 1000m",
-       y = "Count")
-
-
-
-
 
 
 
