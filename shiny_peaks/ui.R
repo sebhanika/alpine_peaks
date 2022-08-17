@@ -1,14 +1,11 @@
 
 #Set User Interface
 
-
 navbarPage("Alpine Peaks Endings",
-           
            
            # Map Tab -------------------------------
            
            tabPanel("Map", fluidPage(theme = shinytheme("flatly")),
-                    
                     
                     # sidebar with user input definitions
                     sidebarLayout(
@@ -36,7 +33,6 @@ navbarPage("Alpine Peaks Endings",
                         
                       ), 
                       
-                      
                       # Main panel for displaying outputs
                       mainPanel(
                         leafletOutput("map", width = "98.5%")
@@ -49,7 +45,6 @@ navbarPage("Alpine Peaks Endings",
            
            tabPanel("Plots", fluidPage(theme = shinytheme("flatly")),
                     
-                  
                     # sidebar with user input definitions
                     sidebarLayout(
                       
@@ -98,7 +93,6 @@ navbarPage("Alpine Peaks Endings",
            # About -------------------------------
            tabPanel("About", fluidPage(theme = shinytheme("flatly")),
                     
-                    
                     # Explanation about project
                     wellPanel(
                       h3("Project explanations"),
@@ -122,44 +116,45 @@ navbarPage("Alpine Peaks Endings",
                       )
                     )
                       
-                    #   
-                    #   #link to website
-                    #   p(a("Sebastian Hanika", href="https://github.com/sebhanika/alpine_peaks", 
-                    #       target="_blank"), style = "font-size:25px"),
-                    #   #email
-                    #   p("e-mail: hanikasebastian@gmail.com",style = "font-size:20px"),
-                    #   #github
-                    #   
-                    #   p(a("Link to Github Code", href="https://github.com/sebhanika/alpine_peaks", 
-                    #       target="_blank"), style = "font-size:20px"),
-                    #   #twitter
-                    #   p(a("Connect at Twitter", href="https://github.com/sebhanika/alpine_peaks", 
-                    #       target="_blank"), style = "font-size:25px")
-                    #   
-                    # )
-                    # 
-                   
-                    
            ),
            # Footer -------------------------------
            hr(style = "border-color: #cbcbcb;"),
            fluidRow(
              column(9,
+                    # data sources
                     p('Data sources: ', 
                       tags$a(href = "https://www.openstreetmap.org", 'Openstreetmap', 
                              target = '_blank'), ", ", 
                       tags$a(href = "https://www.eea.europa.eu", 'EEA', 
                              target = '_blank'), "and ",
-                      
                       tags$a(href = "https://ec.europa.eu/eurostat/", 'eurostat', 
                              target = '_blank'), ".", style = "font-size: 85%"),
                     
+                    #github info
                     p("Created by Sebastian Hanika in August 2022", HTML("&bull;"),
                       "Find the code on Github:", 
-                      tags$a(href = "https://github.com/sebhanika/alpine_peaks",
-                             "Github", target = '_blank'), style = "font-size: 85%"),
+                      tags$a(href = "https://github.com/sebhanika/alpine_peaks", 
+                             icon(name = "github", class = 'fa fa-github', style = 'color:#5000a5'),
+                             target = '_blank'), style = "font-size: 85%"),
                     
-                    p(tags$em("Last updated: August 2022"), style = 'font-size:75%')),
+                    #contact info
+                    p("Connect with me on Twitter", 
+                      tags$a(href = "https://twitter.com/SebHanika", 
+                             icon(name = "twitter", class = 'fa fa-twitter', style = 'color:#00acee'), 
+                             target = '_blank'),
+                      
+                      HTML("&bull;"), "Or send an email ",
+                      
+                      tags$a(href = "mailto:hanikasebastian@gmail.com",
+                             icon(name = "Env", class = 'fa fa-envelope', style = 'color:#516888'),
+                             target = '_blank'), 
+                      style = 'font-size:85%' ),
+                    
+                    
+                    p(tags$em("Last changes: August 2022"), style = 'font-size:75%'),
+                    
+                    
+                    ),
              
              windowTitle = "Mountain Names")
            
