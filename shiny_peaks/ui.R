@@ -59,31 +59,26 @@ navbarPage("Alpine Peaks Endings",
                         
                         h4("Elevation and Countries"),
                         p("Here we see the data in a different form. The first graph shows the total
-                          counts by suffix. The second plot shows histograms of elevation by each ending"),
-                        
-                        p("We can filter the data by Countries and elevation"),
+                          counts by suffix. The second plot shows histograms of elevation by each ending. 
+                          You can filter the data by countries and elevation."),
                         
 
-                        helpText("Here you can select the range of elevation in meters."),
-                        
+
                         # define slider
                         sliderInput("elev",
-                                    "Elevation:", 
+                                    "Select range of elevation in meter:", 
                                     min = 0,
                                     max = max(peaks$ele, na.rm = TRUE),
                                     value = c(0, max(peaks$ele, na.rm = TRUE)), sep=''),
                         
                         br(),
                         
-                        helpText("Here you can select a specific country."),
                         selectInput("country", 
-                                    label = "Country",
+                                    label = "Select countries:",
                                     choices = c("ALL", cntrs), 
-                                    selected = NULL,
+                                    selected = "ALL",
                                     multiple = T)
-                        
-                        
-                        
+                      
                       ),
                       
                       # Main panel with plots
@@ -108,40 +103,41 @@ navbarPage("Alpine Peaks Endings",
                     wellPanel(
                       h3("Project explanations"),
                       p("This project visualizes the spatial distribution of the most common
-                           German suffixes of mountains in the Alps. Many mountains share common
-                           suffixes such as “-horn”, “-spitze” and “-kogel”, however are there any
-                           regional differences? Since German is spoken throughout many regeions
-                           of the alps, these distrbtions do not follow national borders. However,
-                           naturally most mountain peaks with German names can be found in
-                           predominantly German speaking areas such as Austria, South-Tyrol,
-                           Germany and parts of Switzerland."),
+                        German endings of mountain names in the Alps. Many mountains share common
+                        suffixes such as “-horn”, “-spitze” and “-kogel”, however are there any
+                        regional differences? Since German is spoken throughout many regeions
+                        of the alps, these distributions do not necessarily follow national borders.
+                        However, obviously, most mountain peaks with German names can be found in
+                        predominantly German speaking areas such as Austria, South-Tyrol,
+                        Germany and parts of Switzerland."),
                       
-                      h3("Methodology"),
                       p("The analysis is based on the names of mountains as reported in the OpenStreetMap
-                           project and therefore might not include every regional variety or secondoary summits.
-                           Furthermore not all peaks had elevation data included, hence some peaks are missing in
-                           the visualization in the plot tab. 
-                           The R code to recreate the project can be found", 
+                        project and therefore might not include every regional variety or secondary summits.
+                        Furthermore not all peaks had elevation data included, hence some peaks are missing in
+                        the visualization in the plot tab. Additionally some other special names or name add-ons
+                        might not be fully excluded from the dataset."),
+                      
+                      p("The R code to recreate the project can be found", 
                         a("here.", href="https://github.com/sebhanika/alpine_peaks", target="_blank")
-                      ),
-                      
-                      
-                      
-                      #link to website
-                      p(a("Sebastian Hanika", href="https://github.com/sebhanika/alpine_peaks", 
-                          target="_blank"), style = "font-size:25px"),
-                      #email
-                      p("e-mail: hanikasebastian@gmail.com",style = "font-size:20px"),
-                      #github
-                      
-                      p(a("Link to Github Code", href="https://github.com/sebhanika/alpine_peaks", 
-                          target="_blank"), style = "font-size:20px"),
-                      #twitter
-                      p(a("Connect at Twitter", href="https://github.com/sebhanika/alpine_peaks", 
-                          target="_blank"), style = "font-size:25px")
-                      
+                      )
                     )
-                    
+                      
+                    #   
+                    #   #link to website
+                    #   p(a("Sebastian Hanika", href="https://github.com/sebhanika/alpine_peaks", 
+                    #       target="_blank"), style = "font-size:25px"),
+                    #   #email
+                    #   p("e-mail: hanikasebastian@gmail.com",style = "font-size:20px"),
+                    #   #github
+                    #   
+                    #   p(a("Link to Github Code", href="https://github.com/sebhanika/alpine_peaks", 
+                    #       target="_blank"), style = "font-size:20px"),
+                    #   #twitter
+                    #   p(a("Connect at Twitter", href="https://github.com/sebhanika/alpine_peaks", 
+                    #       target="_blank"), style = "font-size:25px")
+                    #   
+                    # )
+                    # 
                    
                     
            ),

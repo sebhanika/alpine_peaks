@@ -68,6 +68,7 @@ function(input, output, session) {
 
   # Reactive expression for the data subsetted by slider panels
 
+   
   plotdata <- reactive({
     # if nothing is selected because user deleted everything we display all points
     # not the initial setting however as it is cluttered
@@ -78,11 +79,11 @@ function(input, output, session) {
     # return selected input
     else {
       return(subset(peaks,peaks$ele %in% c(input$elev[1]:input$elev[2]) & #condition 1
-                      peaks$NAME_ENGL == input$country)) # condition 2
+                      peaks$NAME_ENGL %in% input$country)) # condition 2
       }
     })
 
-
+    
   ### Plot1 with Total counts by endings(sorted)
   # Plot 1 is a simple bar chart that changes based on country and elevation input
   output$plot1 <- renderPlot({
@@ -102,8 +103,10 @@ function(input, output, session) {
             axis.title = element_text(color = "grey30", size = 12),
             legend.position = "none",
             title = element_text(color = "grey30", size = 16)) +
-      labs(title = "Most commom endings of Alpine mountains in German",
-           x = "Endings",
+      labs(title = "Most commom German endings of Alpine peaks",
+           subtitle = paste("in:",  paste(input$country, collapse = ", "), 
+                            " from", input$elev[1], "m", "to", input$elev[2], "m"),
+           x = "Ending",
            y = "Count")
     })
   
@@ -127,10 +130,12 @@ function(input, output, session) {
             panel.border = element_rect(colour = "grey30", fill=NA, size=0.5),
             axis.title = element_text(color = "grey30", size = 12),
             legend.position = "none",
-            strip.background =element_rect(fill="white"),
+            strip.background = element_rect(fill="white"),
             strip.text = element_text(color = "grey30", size = 14),
             title = element_text(color = "grey30", size = 16)) +
-      labs(title = "Distribution of Elevation of alpine mountains",
+      labs(title = "Distibution of elevation",
+           subtitle = paste("in:",  paste(input$country, collapse = ", "), 
+                            " from", input$elev[1], "m", "to", input$elev[2], "m"),
            x = "Elevation in 1000m",
            y = "Count")
   })
