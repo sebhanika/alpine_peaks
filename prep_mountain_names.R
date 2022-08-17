@@ -10,11 +10,12 @@
 ## Date Created: 12/08/2022
 ## ---------------------------
 ##
-## Notes:
-##   
+## Notes: This is the script used to prepare the data for the 'Alpine Peaks Endings'
+##        Shiny app. I automatically downloads/queries all required data and unpacks
+##        them into new directories. However I only share this script and the final 
+##        data frame to reduce the size. 
 ##
 ## ---------------------------
-
 
 # Libraries and setup -----------------------------------------------------
 
@@ -24,15 +25,20 @@ library(geojsonsf)
 library(osmdata)
 library(downloader)
 library(leaflet)
-library(nationalparkcolors)
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 # load country data -------------------------------------------------------
 
+# get data from eurostat
 url_countries <- "https://gisco-services.ec.europa.eu/distribution/v2/countries/download/ref-countries-2020-10m.geojson.zip"
-download(url = url_countries, dest="countries.zip", mode="wb") # downloads zip folder into current directory
-unzip("countries.zip", exdir = "data/europe_countries", files = "CNTR_RG_10M_2020_4326.geojson") # unzips file into current working directory
+download(url = url_countries, 
+         dest="countries.zip",
+         mode="wb") # downloads zip folder into current directory
+
+unzip("countries.zip",
+      exdir = "data/europe_countries",
+      files = "CNTR_RG_10M_2020_4326.geojson") # unzips file into current working directory
 
 # loads geojson into R
 countries_europe <- geojson_sf("data/europe_countries/CNTR_RG_10M_2020_4326.geojson") %>% 
@@ -43,8 +49,12 @@ countries_europe <- geojson_sf("data/europe_countries/CNTR_RG_10M_2020_4326.geoj
 
 url_alps <- "https://www.eea.europa.eu/data-and-maps/data/european-mountain-areas/european-mountain-areas/european-mountain-areas/at_download/file"
 
-download(url = url_alps, dest="mountain_areas.zip", mode="wb") # downloads zip folder into current directory
-unzip("mountain_areas.zip", exdir = "data/mountain_areas") # unzips file into current working directory
+download(url = url_alps,
+         dest="mountain_areas.zip", 
+         mode="wb") # downloads zip folder into current directory
+
+unzip("mountain_areas.zip", 
+      exdir = "data/mountain_areas") # unzips file into current working directory
 
 # load area of alps
 alps.load <- read_sf(dsn ="data/mountain_areas/m_massifs_v1.shp") %>% 
@@ -54,7 +64,7 @@ alps.load <- read_sf(dsn ="data/mountain_areas/m_massifs_v1.shp") %>%
 alps.reproj <- st_transform(alps.load, 4326) 
 
 # fix geometries
-alps <- st_make_valid(alps.reproj) # f
+alps <- st_make_valid(alps.reproj) 
 
 #remove unnecessary objects
 rm(alps.load, alps.reproj)
@@ -138,65 +148,6 @@ peaks.ends <- peaks.alps %>%
   filter(type_end != is.na(type_end))
 
 
-
+# export data 
 #saveRDS(peaks.ends, "peaks_ends")
 
-
-
-
-
-peaks %>% as_tibble() %>% 
-  count(type_end_lab) %>% 
-  ggplot(aes(x = reorder(type_end_lab, n))) +
-  geom_point(aes(y = n), color = "#516888")+
-    geom_segment(aes(xend = type_end_lab, y = 0, yend = n),
-                 color = "#516888") +
-  coord_flip()+
-  theme_bw() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(), 
-        axis.title = element_text(color = "grey30", size = 12),
-        legend.position = "none",
-        title = element_text(color = "grey30", size = 16)) +
-  labs(title = "Most commom endings of Alpine mountains in German",
-       x = "Endings",
-       y = "Count")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-p <- as_tibble(peaks) %>% 
-  count(type_end_lab) %>% 
-  ggplot(aes(x = forcats::fct_infreq(type_end_lab))) +
-  geom_segment(aes(x = forcats::fct_infreq(type_end_lab),
-                   xend = ),
-               stat = "count", fill = "#516888", na.rm = TRUE)+
-  #coord_flip()+
-  theme_bw() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(), 
-        axis.title = element_text(color = "grey30", size = 12),
-        legend.position = "none",
-        title = element_text(color = "grey30", size = 16)) +
-  labs(title = "Most commom endings of Alpine mountains in German",
-       x = "Endings",
-       y = "Count")
