@@ -117,7 +117,7 @@ peaks.alps <- st_join(
 
 # most typical endings
 endings <- paste0(c("berg", "spitze", "spitz", "kogel", "horn", "joch", 
-                    "stein", "eck", "ling", "stock", "kopf"), " ")
+                    "stein", "eck", "stock", "kopf"), " ")
 
 endings_filt <- paste(endings, collapse = "|")
 
@@ -143,12 +143,60 @@ peaks.ends <- peaks.alps %>%
 
 
 
-# testing stuff while building app, delete later --------------------------
 
 
-peaks <- readRDS("peaks_ends")
+peaks %>% as_tibble() %>% 
+  count(type_end_lab) %>% 
+  ggplot(aes(x = reorder(type_end_lab, n))) +
+  geom_point(aes(y = n), color = "#516888")+
+    geom_segment(aes(xend = type_end_lab, y = 0, yend = n),
+                 color = "#516888") +
+  coord_flip()+
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.title = element_text(color = "grey30", size = 12),
+        legend.position = "none",
+        title = element_text(color = "grey30", size = 16)) +
+  labs(title = "Most commom endings of Alpine mountains in German",
+       x = "Endings",
+       y = "Count")
 
-peaks$ele <- as.numeric(peaks$ele)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+p <- as_tibble(peaks) %>% 
+  count(type_end_lab) %>% 
+  ggplot(aes(x = forcats::fct_infreq(type_end_lab))) +
+  geom_segment(aes(x = forcats::fct_infreq(type_end_lab),
+                   xend = ),
+               stat = "count", fill = "#516888", na.rm = TRUE)+
+  #coord_flip()+
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.title = element_text(color = "grey30", size = 12),
+        legend.position = "none",
+        title = element_text(color = "grey30", size = 16)) +
+  labs(title = "Most commom endings of Alpine mountains in German",
+       x = "Endings",
+       y = "Count")
