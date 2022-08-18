@@ -105,7 +105,7 @@ function(input, output, session) {
             axis.text = element_text(color = "grey30", size = 12),
             legend.position = "none",
             title = element_text(color = "grey30", size = 16)) +
-      labs(title = "Most commom German endings of Alpine peaks",
+      labs(title = "Most common endings of Alpine peaks",
            subtitle = paste("in:",  paste(input$country, collapse = ", "), 
                             " from", input$elev[1], "m", "to", input$elev[2], "m"),
            x = "Ending",
