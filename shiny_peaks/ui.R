@@ -8,11 +8,12 @@ bootstrapPage('',
     windowTitle = "ShinyPeaks",
     fluid = T,
     theme = shinytheme("flatly"), 
+    position = "fixed-top",
 
              # Map Tab -------------------------------
              
              tabPanel("Map", 
-                      titlePanel(h2("Alpine Peaks Endings", style = "margin-bottom: 40px;
+                      titlePanel(h2("Alpine Peaks Endings", style = "margin-bottom: 30px;
                                                                      font-size: 36px")),                 
                      # Introduction text 
                       wellPanel(
@@ -190,7 +191,8 @@ bootstrapPage('',
              # close navbarPage and UI
   ),
 
-tags$style("* { font-family: Helvetica; font-size: 101%}")
+tags$style("* { font-family: Helvetica; font-size: 101%}"),
+tags$style(type="text/css", "body {padding-top: 70px;}")
 )
 
 
