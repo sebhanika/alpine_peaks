@@ -11,18 +11,20 @@ navbarPage(title = icon(name = "mountain", class = "fa-solid fa-mountain"),
                     wellPanel(
                     
                     h2("Alpine Peaks Endings"),
+                    br(),
                     
                     em(p("Have you ever wondered if German suffixes of mountain names have regional patterns across the Alps?"),
                     p("No?"),
-                    p("Well, I guess it is a bit niche, nevertheless I hope you can enjoy this Shiny App!"), style = "text-indent:20px; color:#63666A"),
+                    p("Well, I guess it is a bit niche, nevertheless I hope you can enjoy this Shiny App!"),
+                    style = "text-indent:25px; color:#858a7e"),
                    
-                    p("If you don't speak German, I assume you might be a bit confused (maybe even if you speak it).
+                    p("If you don't speak German, I assume you might be a bit confused right now (maybe even if you speak it).
                       In German many mountains share common suffixes such as “-horn”, “-spitze” and “-kogel”. 
-                      While hiking I recently wondered if there are any detectable regional differences between 
+                      While hiking, I recently wondered if there are any detectable regional differences between 
                       these names, especially since German dialects vary widely across the Alps. 
                       
                       If you want to find you more, you can explore the map below to see differences in the spatial 
-                      distribution. Additional information on the data can be found on the",
+                      distribution. Additional information about the data can be found on the",
                       em("Plots"), "tab.")
                       ),
                     
