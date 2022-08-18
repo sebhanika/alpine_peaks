@@ -1,25 +1,47 @@
 
 #Set User Interface
 
-navbarPage("Alpine Peaks Endings",
+navbarPage(title = icon(name = "mountain", class = "fa-solid fa-mountain"),
            
            # Map Tab -------------------------------
            
            tabPanel("Map", fluidPage(theme = shinytheme("flatly")),
                     
+                    # Introduction text 
+                    wellPanel(
+                    
+                    h2("Alpine Peaks Endings"),
+                    
+                    em(p("Have you ever wondered if German suffixes of mountain names have regional patterns across the Alps?"),
+                    p("No?"),
+                    p("Well, I guess it is a bit niche, nevertheless I hope you can enjoy this Shiny App!"), style = "text-indent:20px; color:#63666A"),
+                   
+                    p("If you don't speak German, I assume you might be a bit confused (maybe even if you speak it).
+                      In German many mountains share common suffixes such as “-horn”, “-spitze” and “-kogel”. 
+                      While hiking I recently wondered if there are any detectable regional differences between 
+                      these names, especially since German dialects vary widely across the Alps. 
+                      
+                      If you want to find you more, you can explore the map below to see differences in the spatial 
+                      distribution. Additional information on the data can be found on the",
+                      em("Plots"), "tab.")
+                      ),
+                    
                     # sidebar with user input definitions
                     sidebarLayout(
-                      # side bar panel with text selction
+                      # side bar panel with text selection
+                      
                       sidebarPanel(
                         
                         # Explanation text
-                        h4("Spatial distribution of mountain name endings"),
+                        h4("Interactive map of mountain names"),
                         
-                        p("Select up to nine different suffixes of German mountain names in the Alps."),
-                        
-                        p("Hover across points or click them to get more information about the mountain peak.", br(), ),
-                        
-                        p("Change the basemap if you need more contrast."),
+                        #Bulletpoints
+                        tags$ul(
+                          tags$li("Select suffixes (up to 9)."), 
+                          tags$li("Hover or click on points."), 
+                          tags$li("Zoom in or out for better overview."), 
+                          tags$li("Change basemap for better contrast.")
+                          ), 
                         
                         # input/select mountain ending
                         selectInput("end", 
@@ -58,7 +80,6 @@ navbarPage("Alpine Peaks Endings",
                           You can filter the data by countries and elevation."),
                         
 
-
                         # define slider
                         sliderInput("elev",
                                     "Select range of elevation in meter:", 
@@ -89,18 +110,17 @@ navbarPage("Alpine Peaks Endings",
            ),
            
            
-           
            # About -------------------------------
            tabPanel("About", fluidPage(theme = shinytheme("flatly")),
                     
                     # Explanation about project
                     wellPanel(
-                      h3("Project explanations"),
+                      h3("About this project explanations"),
                       p("This project visualizes the spatial distribution of the most common
                         German endings of mountain names in the Alps. Many mountains share common
                         suffixes such as “-horn”, “-spitze” and “-kogel”, however are there any
-                        regional differences? Since German is spoken throughout many regeions
-                        of the alps, these distributions do not necessarily follow national borders.
+                        regional differences? Since German is spoken throughout many regions
+                        of the Alps, these distributions do not necessarily follow national borders.
                         However, obviously, most mountain peaks with German names can be found in
                         predominantly German speaking areas such as Austria, South-Tyrol,
                         Germany and parts of Switzerland."),
@@ -109,7 +129,7 @@ navbarPage("Alpine Peaks Endings",
                         project and therefore might not include every regional variety or secondary summits.
                         Furthermore not all peaks had elevation data included, hence some peaks are missing in
                         the visualization in the plot tab. Additionally some other special names or name add-ons
-                        might not be fully excluded from the dataset."),
+                        might not have been correctly handled in the data preparation."),
                       
                       p("The R code to recreate the project can be found", 
                         a("here.", href="https://github.com/sebhanika/alpine_peaks", target="_blank")
