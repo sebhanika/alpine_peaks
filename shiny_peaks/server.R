@@ -91,16 +91,18 @@ function(input, output, session) {
     plotdata() %>% 
       as_tibble() %>% 
       count(type_end_lab) %>% 
-      ggplot(aes(x = reorder(type_end_lab, n))) +
-      geom_point(aes(y = n), color = "#516888", size = 3)+
+      ggplot(aes(x = reorder(type_end_lab, n), color = type_end_lab)) +
       geom_segment(aes(xend = type_end_lab, y = 0, yend = n),
                    color = "#516888") +
+      geom_point(aes(y = n), color = custom_pal, size = 4)+
+      scale_color_manual(values = custom_pal) +
       coord_flip()+
       theme_bw() +
       theme(panel.grid.major = element_blank(),
             panel.grid.minor = element_blank(),
             panel.background = element_blank(), 
             axis.title = element_text(color = "grey30", size = 12),
+            axis.text = element_text(color = "grey30", size = 12),
             legend.position = "none",
             title = element_text(color = "grey30", size = 16)) +
       labs(title = "Most commom German endings of Alpine peaks",
@@ -117,8 +119,8 @@ function(input, output, session) {
   output$plot2 <- renderPlot({
     
     plotdata() %>% 
-      ggplot(aes(x = ele, fill = type_end)) +
-      geom_histogram(bins = 40, na.rm = T)+
+      ggplot(aes(x = ele, fill = type_end_lab)) +
+      geom_density(na.rm = T, alpha = 0.75, size = 0.1, color = "white")+
       facet_wrap(~type_end_lab, nrow = 3) +
       scale_fill_manual(values = custom_pal) +
       scale_x_continuous(breaks = seq(0, 4000, by = 1000),
@@ -129,15 +131,16 @@ function(input, output, session) {
             panel.background = element_blank(), 
             panel.border = element_rect(colour = "grey30", fill=NA, size=0.5),
             axis.title = element_text(color = "grey30", size = 12),
+            axis.text = element_text(color = "grey30", size = 12),
             legend.position = "none",
             strip.background = element_rect(fill="white"),
             strip.text = element_text(color = "grey30", size = 14),
             title = element_text(color = "grey30", size = 16)) +
-      labs(title = "Distibution of elevation",
+      labs(title = "Density plot of elevation",
            subtitle = paste("in:",  paste(input$country, collapse = ", "), 
                             " from", input$elev[1], "m", "to", input$elev[2], "m"),
            x = "Elevation in 1000m",
-           y = "Count")
+           y = "Density")
   })
   
 }
