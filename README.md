@@ -1,6 +1,6 @@
 # alpine_peaks
 
-This is the repo for my first shiny app.
+This is the repo for my first shiny app. Find the final result at https://sebhanika.shinyapps.io/shiny_peaks/
 
 This project visualizes the spatial distribution of the most common German endings of mountain names in the Alps. Many mountains share common suffixes such as “-horn”, “-spitze” and “-kogel”, however are there any regional differences? Since German is spoken throughout many regions of the Alps, these distributions do not necessarily follow national borders. However, obviously, most mountain peaks with German names can be found in predominantly German speaking areas such as Austria, South-Tyrol, Germany and parts of Switzerland.
 
