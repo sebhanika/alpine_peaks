@@ -94,7 +94,7 @@ function(input, output, session) {
       ggplot(aes(x = reorder(type_end_lab, n), color = type_end_lab)) +
       geom_segment(aes(xend = type_end_lab, y = 0, yend = n),
                    color = "#516888") +
-      geom_point(aes(y = n), color = custom_pal, size = 4)+
+      geom_point(aes(y = n), size = 4)+
       scale_color_manual(values = custom_pal) +
       coord_flip()+
       theme_bw() +
@@ -120,7 +120,7 @@ function(input, output, session) {
     
     plotdata() %>% 
       ggplot(aes(x = ele, fill = type_end_lab)) +
-      geom_density(na.rm = T, alpha = 0.75, size = 0.1, color = "white")+
+      geom_density(alpha = 0.75, size = 0.1, color = "white")+
       facet_wrap(~type_end_lab, nrow = 3) +
       scale_fill_manual(values = custom_pal) +
       scale_x_continuous(breaks = seq(0, 4000, by = 1000),
